@@ -1,0 +1,32 @@
+{
+  "species": "cobblemon:charmeleon",
+  "order": 0,
+  "variations": [
+    {
+      "aspects": [],
+      "poser": "cobblemon:charmeleon",
+      "model": "cobblemon:charmeleon.geo",
+      "texture": "cobblemon:textures/pokemon/0005_charmeleon/charmeleon.png",
+      "layers": [
+        {
+          "name": "glow",
+          "texture": "cobblemon:textures/pokemon/0005_charmeleon/charmeleon_emissive.png",
+          "emissive": true,
+          "translucent": true
+        }
+      ]
+    },
+    {
+      "aspects": ["shiny"],
+      "texture": "cobblemon:textures/pokemon/0005_charmeleon/charmeleon_shiny.png",
+      "layers": [
+        {
+          "name": "glow",
+          "texture": "cobblemon:textures/pokemon/0005_charmeleon/charmeleon_shiny_emissive.png",
+          "emissive": true,
+          "translucent": true
+        }
+      ]
+    }
+  ]
+}

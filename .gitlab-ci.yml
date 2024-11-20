@@ -1,0 +1,66 @@
+image: amazoncorretto:21
+
+before_script:
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+
+stages:
+  - build
+  - deploy
+
+#TODO add client reference test process, search for import com.cobblemon.mod.common.client
+
+build:
+  stage: build
+  only:
+    - branches@cable-mc/cobblemon
+  script:
+    - export GRADLE_OPTS="-Xmx4G -Xms4G"
+    - chmod +x ./gradlew
+    - ./gradlew build
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - neoforge/build/libs
+      - fabric/build/libs
+
+publish:
+  stage: deploy
+  dependencies:
+    - build
+  cache:
+    key: "CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - neoforge/build/libs/*.jar
+      - fabric/build/libs/*.jar
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - export GRADLE_OPTS="-Xmx4G -Xms4G"
+    - chmod +x ./gradlew
+    - ./gradlew publish
+
+# Separate step to deploy the artifacts, save Norry the headache of keeping even more shit around
+deploy:
+  stage: deploy
+  dependencies:
+    - build
+  when: manual
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - neoforge/build/libs/*.jar
+      - fabric/build/libs/*.jar
+  script: 
+    - echo "Collecting artifacts..."
+    - mv neoforge/build/libs/*+*.jar ./
+    - mv fabric/build/libs/*+*.jar ./
+    - for f in *.jar; do mv "$f" "$(echo "$f" | sed s/+/b$CI_PIPELINE_IID+/)"; done
+  artifacts:
+    expire_in: 28 days
+    paths:
+      - ./*.jar
+#      - neoforge/build/libs/*+*.jar
+#      - fabric/build/libs/*+*.jar
